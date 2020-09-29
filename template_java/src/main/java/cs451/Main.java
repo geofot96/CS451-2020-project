@@ -69,7 +69,7 @@ public class Main
         ///////////////// My stuff //////////////////
 
         int myId = parser.myId();
-        Host myHost = null;
+        Host myHost = parser.hostsMap().get(myId);
         for (Host host : parser.hosts())
         {
             if(host.getId() == myId){
@@ -86,14 +86,15 @@ public class Main
             e.printStackTrace();
         }
 
-        Process process  = new Process(myIp, myHost.getPort(), myHost.getId(), parser.hosts());
+        Process process  = new Process(myIp, myHost.getPort(), myHost.getId(), parser.hostsMap());
 
         for (Host host : parser.hosts())
         {
             int receiverId = host.getId();
             if(receiverId != myId)
             {
-                process.sendMessage("potato" + myHost.getId(), receiverId);
+                process.sendMessage("this is a potato from process " + myHost.getId(), receiverId);
+                process.sendMessage("this is a second potato from process " + myHost.getId(), receiverId);
             }
         }
 

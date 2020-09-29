@@ -1,5 +1,6 @@
 package cs451;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class Parser {
@@ -74,6 +75,10 @@ public class Parser {
 
     public List<Host> hosts() {
         return hostsParser.getHosts();
+    }
+
+    public HashMap<Integer, Host> hostsMap() {
+        return hostsParser.getHostsMap();
     }
 
     public String barrierIp() {

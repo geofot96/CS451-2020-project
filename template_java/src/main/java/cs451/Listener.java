@@ -15,7 +15,7 @@ import java.net.InetAddress;
 public class Listener extends Thread
 {
     private DatagramSocket socket;
-    private int messageLength = 65535;
+    private static final int messageLength = 65535;
 
     public Listener(DatagramSocket socket)
     {
@@ -26,27 +26,43 @@ public class Listener extends Thread
     public void run()
     {
         DatagramSocket socket = this.socket;
-        byte[] receive = new byte[this.messageLength];
-        DatagramPacket dpReceive = null;
+        byte[] compressedMessage = new byte[this.messageLength];
+        DatagramPacket receivedPacket = null;
         System.out.println("RECEIVING MESSAGE IN LISTENER");
         while (true)
         {
-            dpReceive = new DatagramPacket(receive, receive.length);
+            receivedPacket = new DatagramPacket(compressedMessage, compressedMessage.length);
 
             try
             {
-                socket.receive(dpReceive);
+                socket.receive(receivedPacket);
             } catch (IOException e)
             {
                 e.printStackTrace();
             }
-            InetAddress senderIp = dpReceive.getAddress();
-            Integer senderPort = dpReceive.getPort();
-            byte[] msgBytes = dpReceive.getData();
+            byte[] messageBytes = receivedPacket.getData();
 
-            String message = bytesToString(msgBytes);
-
-            System.out.println("THE MESSAGE WAS " + message);
+            Message message = null;
+            ByteArrayInputStream bis = new ByteArrayInputStream(messageBytes);
+            ObjectInputStream ois = null;
+            try
+            {
+                ois = new ObjectInputStream(bis);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            try
+            {
+                message = (Message) ois.readObject();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e)
+            {
+                e.printStackTrace();
+            }
+            message.print();
         }
     }
 

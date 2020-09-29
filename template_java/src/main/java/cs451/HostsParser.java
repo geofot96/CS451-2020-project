@@ -3,10 +3,7 @@ package cs451;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class HostsParser {
 
@@ -15,6 +12,7 @@ public class HostsParser {
 
     private String filename;
     private List<Host> hosts = new ArrayList<>();
+    private HashMap<Integer, Host> hostsMap = new HashMap<>();;
 
     public boolean populate(String key, String filename) {
         if (!key.equals(HOSTS_KEY)) {
@@ -41,6 +39,7 @@ public class HostsParser {
                 }
 
                 hosts.add(newHost);
+                hostsMap.put(newHost.getId(), newHost);
             }
         } catch (IOException e) {
             System.err.println("Problem with the hosts file!");
@@ -73,8 +72,14 @@ public class HostsParser {
         return id <= hosts.size();
     }
 
+
+
     public List<Host> getHosts() {
         return hosts;
+    }
+
+    public HashMap<Integer, Host> getHostsMap(){
+        return hostsMap;
     }
 
     class HostsComparator implements Comparator<Host> {
