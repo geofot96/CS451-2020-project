@@ -68,35 +68,8 @@ public class Main
         System.out.println("Broadcasting messages...");
         ///////////////// My stuff //////////////////
 
-        int myId = parser.myId();
-        Host myHost = parser.hostsMap().get(myId);
-        for (Host host : parser.hosts())
-        {
-            if(host.getId() == myId){
-                myHost = host;
-            }
-        }
-        InetAddress myIp = null;
-
-        try
-        {
-            myIp = InetAddress.getByName(myHost.getIp());
-        } catch (UnknownHostException e)
-        {
-            e.printStackTrace();
-        }
-
-        Process process  = new Process(myIp, myHost.getPort(), myHost.getId(), parser.hostsMap());
-
-        for (Host host : parser.hosts())
-        {
-            int receiverId = host.getId();
-            if(receiverId != myId)
-            {
-                process.sendMessage("this is a potato from process " + myHost.getId(), receiverId);
-                process.sendMessage("this is a second potato from process " + myHost.getId(), receiverId);
-            }
-        }
+        BestEffortBroadcast beb = new BestEffortBroadcast(parser);
+        beb.broadcast("this is a potato from process " + parser.myId());
 
         ////////////////////////////////////////////
         System.out.println("Signaling end of broadcasting messages");
