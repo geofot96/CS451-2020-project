@@ -1,8 +1,6 @@
 package cs451;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -16,10 +14,13 @@ public class Listener extends Thread
 {
     private DatagramSocket socket;
     private static final int messageLength = 65535;
+    private Message message = null;
+    private String outputFilePath;
 
-    public Listener(DatagramSocket socket)
+    public Listener(DatagramSocket socket, String outputFilePath)
     {
         this.socket = socket;
+        this.outputFilePath = outputFilePath;
     }
 
     @Override
@@ -62,21 +63,60 @@ public class Listener extends Thread
             {
                 e.printStackTrace();
             }
-            message.print();
+            this.message = message;
+            //message.print();
+
+            if(!this.message.isAck){
+                System.out.println("Sending ACK for message " + this.message.messageId + " with content " + this.message.getMessage());
+                sendAck();
+            }
+            else{
+                System.out.println("Received ACK for message " + this.message.messageId + " from process " + this.message.getSourceId());
+                this.message.addProcessThatDelivered(this.message.messageId);
+                this.message.hostsThatHaveAcked += 1;
+                if(this.message.hostsThatHaveAcked > this.message.getHostsThatNeedToAck()){
+                    deliver();
+                }
+            }
         }
     }
 
-    private static String bytesToString(byte[] a)
-    {
-        if (a == null)
-            return null;
-        StringBuilder ret = new StringBuilder();
-        int i = 0;
-        while (a[i] != 0)
+    private void deliver(){
+        System.out.println("DELIVERING MESSAGE " + this.message.getMessage());
+        try
         {
-            ret.append((char) a[i]);
-            i++;
+            writeOutput();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
         }
-        return ret.toString();
+    }
+
+    private void sendAck()
+    {
+        Message ack = new Message("ack",
+                this.message.getSourcePort(),
+                this.message.getSourceIp(),
+                this.message.getSourceId(),
+                this.message.getDestinationPort(),
+                this.message.getDestinationIp(),
+                this.message.getSourceId(),
+                this.message.messageId,
+                true,
+                this.message.getHostsThatNeedToAck());
+        ack.send(this.socket);
+    }
+
+    private void writeOutput() throws IOException
+    {
+        BufferedWriter bw = new BufferedWriter(new FileWriter(this.outputFilePath, true));
+
+        String output = "d " + (int) this.message.getHostsThatNeedToAck() * 2 + " " + this.message.messageId;
+        for(int i = 0; i < output.length(); i++){
+            bw.append(output.charAt(i));
+        }
+        bw.newLine();
+
+        bw.close();
     }
 }

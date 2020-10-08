@@ -69,7 +69,10 @@ public class Main
         ///////////////// My stuff //////////////////
 
         BestEffortBroadcast beb = new BestEffortBroadcast(parser);
-        beb.broadcast("this is a potato from process " + parser.myId());
+        String[] messages = new String[2];
+        messages[0] = "message 1";
+        messages[1] = "message 2";
+        beb.broadcast(messages);
 
         ////////////////////////////////////////////
         System.out.println("Signaling end of broadcasting messages");

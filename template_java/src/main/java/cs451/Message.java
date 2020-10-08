@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.HashSet;
 
 /**
  * Class name: Message.java
@@ -18,18 +19,30 @@ public class Message implements Serializable
     private String message;
     private int destinationPort;
     private InetAddress destinationIp;
+    private int destinationId;
     private int sourcePort;
     private InetAddress sourceIp;
-    private static int messageId;
+    private int sourceId;
+    public int messageId;
+    public boolean isAck;
+    private HashSet<Integer> processesThatDelivered;
+    private double hostsThatNeedToAck;
+    public static double hostsThatHaveAcked;
 
-    public Message(String message, int destinationPort, InetAddress destinationIp, int sourcePort, InetAddress sourceIp, int messageId, DatagramSocket socket)
+    public Message(String message, int destinationPort, InetAddress destinationIp, int destinationId, int sourcePort, InetAddress sourceIp, int sourceId, int messageId, boolean isAck, double hostsThatNeedToAck)
     {
         this.message = message;
         this.destinationPort = destinationPort;
         this.destinationIp = destinationIp;
+        this.destinationId = destinationId;
         this.sourcePort = sourcePort;
         this.sourceIp = sourceIp;
+        this.sourceId = sourceId;
         this.messageId = messageId;
+        this.isAck = isAck;
+        this.processesThatDelivered = new HashSet<>();
+        this.hostsThatNeedToAck = hostsThatNeedToAck;
+        this.hostsThatHaveAcked = 0;
     }
 
     private byte[] compressMessage()
@@ -65,6 +78,10 @@ public class Message implements Serializable
         }
     }
 
+    public void addProcessThatDelivered(int processId){
+        this.processesThatDelivered.add(processId);
+    }
+
     public void print()
     {
         System.out.println("Content : " + message);
@@ -74,5 +91,45 @@ public class Message implements Serializable
         System.out.println("sourceIp : " + sourceIp);
         System.out.println("messageId : " + messageId);
         //System.out.println("socket : " + socket);
+    }
+
+    public int getDestinationPort()
+    {
+        return destinationPort;
+    }
+
+    public InetAddress getDestinationIp()
+    {
+        return destinationIp;
+    }
+
+    public int getSourcePort()
+    {
+        return sourcePort;
+    }
+
+    public InetAddress getSourceIp()
+    {
+        return sourceIp;
+    }
+
+    public int getDestinationId()
+    {
+        return destinationId;
+    }
+
+    public int getSourceId()
+    {
+        return sourceId;
+    }
+
+    public String getMessage()
+    {
+        return message;
+    }
+
+    public double getHostsThatNeedToAck()
+    {
+        return hostsThatNeedToAck;
     }
 }

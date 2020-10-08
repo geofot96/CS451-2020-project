@@ -1,5 +1,6 @@
 package cs451;
 
+import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -14,6 +15,7 @@ public class BestEffortBroadcast
     private Parser parser;
     private int myId;
     private Host myHost;
+    private int messageId;
 
     public BestEffortBroadcast(Parser parser)
     {
@@ -36,20 +38,45 @@ public class BestEffortBroadcast
             e.printStackTrace();
         }
 
-        this.process  = new Process(myIp, myHost.getPort(), myHost.getId(), this.parser.hostsMap());
+        this.process  = new Process(myIp, myHost.getPort(), myHost.getId(), this.parser.hostsMap(), this.parser.output());
+        this.messageId = 1;
     }
 
-    //TODO make argument a list of strings
-    public void broadcast(String message)
+    public void broadcast(String[] message)
     {
         for (Host host : this.parser.hosts())
         {
             int receiverId = host.getId();
             if(receiverId != this.myId)
             {
-                this.process.sendMessage(message, receiverId);
-//                this.process.sendMessage("this is a second potato from process " + this.myHost.getId(), receiverId);
+                for(String m : message)
+                {
+                    this.process.sendMessage(m, receiverId, messageId);
+                    messageId += 1;
+                    try
+                    {
+                        writeOutput(parser.output());
+                    } catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
+    }
+
+    private void writeOutput(String outputFilePath) throws IOException
+    {
+        BufferedWriter bw = new BufferedWriter(new FileWriter(outputFilePath, true));
+
+        String output = "b " + messageId;
+
+        for(int i = 0; i < output.length(); i++){
+            bw.append(output.charAt(i));
+        }
+        bw.newLine();
+
+
+        bw.close();
     }
 }

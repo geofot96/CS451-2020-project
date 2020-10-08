@@ -4,7 +4,9 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -22,7 +24,7 @@ public class Process extends Thread
     private Listener myListener;
     private static int messageId;
 
-    public Process(InetAddress ip, int port, int processId, HashMap<Integer, Host> hosts)
+    public Process(InetAddress ip, int port, int processId, HashMap<Integer, Host> hosts, String outputFilePath)
     {
         // Initialize the variables
         this.ip = ip;
@@ -38,11 +40,14 @@ public class Process extends Thread
         this.hosts = hosts;
         this.messageId = 1;
 
-        myListener = new Listener(this.socket);
+        myListener = new Listener(this.socket, outputFilePath);
+
+        System.out.println("Hosts on the system: " + this.hosts.values());
+
         myListener.start();
     }
 
-    public void sendMessage(String message, int receiverId)
+    public void sendMessage(String message, int receiverId, int messageId)
     {
         Host receiver = this.hosts.get(receiverId);
 
@@ -56,7 +61,18 @@ public class Process extends Thread
             e.printStackTrace();
         }
 
-        Message message1 = new Message(message, receiver.getPort(), receiverIp, this.port, this.ip, this.messageId, this.socket);
+        double hostsThatNeedToAck =this.hosts.values().size() / 2.0;
+
+        Message message1 = new Message(message,
+                receiver.getPort(),
+                receiverIp,
+                receiverId,
+                this.port,
+                this.ip,
+                this.processId,
+                messageId,
+                false,
+                hostsThatNeedToAck);
 
         System.out.println("SENDING MESSAGE TO " + receiverId);
 
