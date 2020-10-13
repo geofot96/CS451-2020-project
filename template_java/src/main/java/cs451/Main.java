@@ -1,11 +1,7 @@
 package cs451;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import cs451.broadcasts.BestEffortBroadcast;
+import cs451.processes.Process;
 
 public class Main
 {
@@ -68,11 +64,16 @@ public class Main
         System.out.println("Broadcasting messages...");
         ///////////////// My stuff //////////////////
 
-        BestEffortBroadcast beb = new BestEffortBroadcast(parser);
-        String[] messages = new String[2];
-        messages[0] = "message 1";
-        messages[1] = "message 2";
-        beb.broadcast(messages);
+        Message[] messages = new Message[2];
+        messages[0] = new Message("message 1", 1, parser.myId());
+        messages[1] = new Message("message 2", 2, parser.myId());
+
+        Process process = new Process(parser.myId(), parser.hosts());
+
+        for(Message message: messages)
+        {
+            process.broadcast(message);
+        }
 
         ////////////////////////////////////////////
         System.out.println("Signaling end of broadcasting messages");

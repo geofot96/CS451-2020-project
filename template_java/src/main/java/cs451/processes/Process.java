@@ -1,4 +1,9 @@
-package cs451;
+package cs451.processes;
+import cs451.Host;
+import cs451.Message;
+import cs451.broadcasts.BestEffortBroadcast;
+import cs451.utils.Deliverer;
+
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -14,9 +19,62 @@ import java.util.Set;
  * Created by: George Fotiadis
  * Date: 25/09/2020 at 21:06
  **/
-public class Process extends Thread
+public class Process extends Thread implements Deliverer
 {
-    private DatagramSocket socket;
+    private int processId;
+    private List<Host> hosts;
+    private Host myHost;
+    private BestEffortBroadcast bestEffortBroadcast;
+
+    public Process(int processId, List<Host> hosts)
+    {
+        this.processId = processId;
+        this.hosts = hosts;
+        getMyHost();
+        this.bestEffortBroadcast = new BestEffortBroadcast(this, this.hosts, myHost.getPort());
+    }
+
+    public void broadcast(Message message)
+    {
+        this.bestEffortBroadcast.broadcast(message);
+    }
+
+    private void getMyHost()
+    {
+        for(Host host: hosts)
+        {
+            if(host.getId() == this.processId)
+            {
+                this.myHost = host;
+                return;
+            }
+        }
+    }
+
+    public void deliver(Message message)
+    {
+        System.out.println(message.getMessage() + " from process " + message.getSenderId());
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+private DatagramSocket socket;
     private InetAddress ip;
     private int port;
     private int processId;
@@ -80,4 +138,4 @@ public class Process extends Thread
 
         this.messageId += 1;
     }
-}
+ */

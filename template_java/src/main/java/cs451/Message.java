@@ -17,6 +17,34 @@ import java.util.HashSet;
 public class Message implements Serializable
 {
     private String message;
+    private int messageId;
+    private int senderId;
+
+    public Message(String message, int messageId, int senderId)
+    {
+        this.message = message;
+        this.messageId = messageId;
+        this.senderId = senderId;
+    }
+
+    public String getMessage()
+    {
+        return message;
+    }
+
+    public int getMessageId()
+    {
+        return messageId;
+    }
+
+    public int getSenderId()
+    {
+        return senderId;
+    }
+}
+
+/*
+private String message;
     private int destinationPort;
     private InetAddress destinationIp;
     private int destinationId;
@@ -132,4 +160,4 @@ public class Message implements Serializable
     {
         return hostsThatNeedToAck;
     }
-}
+ */
