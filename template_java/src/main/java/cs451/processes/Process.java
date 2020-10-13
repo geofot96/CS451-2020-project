@@ -59,12 +59,8 @@ public class Process extends Thread implements Deliverer
     @Override
     public void deliver(Message message)
     {
-        if(!this.delivered.contains(message.getMessageId()))
-        {
-            this.delivered.add(message.getMessageId());
             logs.add("d " + this.processId + " " + message.getMessageId());
             System.out.println(message.getMessage() + " from process " + message.getSenderId());
-        }
     }
 
     public void writeOutput() throws IOException

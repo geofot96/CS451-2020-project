@@ -23,6 +23,7 @@ public class Main
         {
             e.printStackTrace();
         }
+        System.out.println("Done.");
     }
 
     private static void initSignalHandlers()

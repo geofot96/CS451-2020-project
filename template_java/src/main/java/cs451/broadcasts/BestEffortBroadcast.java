@@ -3,6 +3,7 @@ package cs451.broadcasts;
 import cs451.Host;
 import cs451.Message;
 import cs451.links.FairLossLinks;
+import cs451.links.PerfectLinks;
 import cs451.utils.Deliverer;
 
 import java.util.List;
@@ -15,13 +16,13 @@ import java.util.List;
 public class BestEffortBroadcast implements Deliverer, Broadcast
 {
     private Deliverer deliverer;
-    private FairLossLinks fairLossLinks;
+    private PerfectLinks perfectLinks;
     private List<Host> hosts;
 
     public BestEffortBroadcast(Deliverer deliverer, List<Host> hosts, int myPort)
     {
         this.deliverer = deliverer;
-        this.fairLossLinks = new FairLossLinks(this, myPort);
+        this.perfectLinks = new PerfectLinks(this, myPort);
         this.hosts = hosts;
     }
 
@@ -42,7 +43,7 @@ public class BestEffortBroadcast implements Deliverer, Broadcast
     {
         for(Host host : hosts)
         {
-            this.fairLossLinks.send(message, host);
+            this.perfectLinks.send(message, host);
         }
     }
 
