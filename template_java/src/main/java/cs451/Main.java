@@ -3,8 +3,11 @@ package cs451;
 import cs451.broadcasts.BestEffortBroadcast;
 import cs451.processes.Process;
 
+import java.io.IOException;
+
 public class Main
 {
+    private static Process process;
 
     private static void handleSignal()
     {
@@ -13,6 +16,13 @@ public class Main
 
         //write/flush output file if necessary
         System.out.println("Writing output.");
+        try
+        {
+            process.writeOutput();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private static void initSignalHandlers()
@@ -68,7 +78,7 @@ public class Main
         messages[0] = new Message("message 1", 1, parser.myId());
         messages[1] = new Message("message 2", 2, parser.myId());
 
-        Process process = new Process(parser.myId(), parser.hosts());
+        process = new Process(parser.myId(), parser.hosts(), parser.output());
 
         for(Message message: messages)
         {

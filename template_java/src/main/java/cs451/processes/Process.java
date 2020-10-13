@@ -4,14 +4,12 @@ import cs451.Message;
 import cs451.broadcasts.BestEffortBroadcast;
 import cs451.utils.Deliverer;
 
+import java.io.*;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -25,17 +23,24 @@ public class Process extends Thread implements Deliverer
     private List<Host> hosts;
     private Host myHost;
     private BestEffortBroadcast bestEffortBroadcast;
+    private String outputPath;
+    private List<String> logs;
+    private HashSet<Integer> delivered;
 
-    public Process(int processId, List<Host> hosts)
+    public Process(int processId, List<Host> hosts, String outputPath)
     {
         this.processId = processId;
         this.hosts = hosts;
         getMyHost();
         this.bestEffortBroadcast = new BestEffortBroadcast(this, this.hosts, myHost.getPort());
+        this.outputPath = outputPath;
+        this.logs = new ArrayList<>();
+        this.delivered = new HashSet<>();
     }
 
     public void broadcast(Message message)
     {
+        this.logs.add("b " + message.getMessageId());
         this.bestEffortBroadcast.broadcast(message);
     }
 
@@ -51,10 +56,32 @@ public class Process extends Thread implements Deliverer
         }
     }
 
+    @Override
     public void deliver(Message message)
     {
-        System.out.println(message.getMessage() + " from process " + message.getSenderId());
+        if(!this.delivered.contains(message.getMessageId()))
+        {
+            this.delivered.add(message.getMessageId());
+            logs.add("d " + this.processId + " " + message.getMessageId());
+            System.out.println(message.getMessage() + " from process " + message.getSenderId());
+        }
     }
+
+    public void writeOutput() throws IOException
+    {
+        File fout = new File(outputPath);
+        FileOutputStream fos = new FileOutputStream(fout);
+
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+
+        for (String str : logs) {
+            bw.write(str);
+            bw.newLine();
+        }
+
+        bw.close();
+    }
+
 }
 
 
