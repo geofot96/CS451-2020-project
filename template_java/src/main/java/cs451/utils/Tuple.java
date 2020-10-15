@@ -1,5 +1,7 @@
 package cs451.utils;
 
+import java.util.Objects;
+
 /**
  * Class name: Tuple.java
  * Created by: George Fotiadis
@@ -14,5 +16,21 @@ public class Tuple<T, S>
     {
         this.first = first;
         this.second = second;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tuple<?, ?> tuple = (Tuple<?, ?>) o;
+        return Objects.equals(first, tuple.first) &&
+                Objects.equals(second, tuple.second);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(first, second);
     }
 }

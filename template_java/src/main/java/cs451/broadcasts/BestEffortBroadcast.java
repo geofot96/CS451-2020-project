@@ -1,8 +1,7 @@
 package cs451.broadcasts;
 
 import cs451.Host;
-import cs451.Message;
-import cs451.links.FairLossLinks;
+import cs451.utils.Message;
 import cs451.links.PerfectLinks;
 import cs451.utils.Deliverer;
 

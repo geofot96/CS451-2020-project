@@ -1,14 +1,10 @@
 package cs451.processes;
 import cs451.Host;
-import cs451.Message;
+import cs451.utils.Message;
 import cs451.broadcasts.BestEffortBroadcast;
 import cs451.utils.Deliverer;
 
 import java.io.*;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.*;
 
 
@@ -33,6 +29,7 @@ public class Process extends Thread implements Deliverer
         this.hosts = hosts;
         getMyHost();
         this.bestEffortBroadcast = new BestEffortBroadcast(this, this.hosts, myHost.getPort());
+        System.out.println("My port is " + myHost.getPort());
         this.outputPath = outputPath;
         this.logs = new ArrayList<>();
         this.delivered = new HashSet<>();
@@ -59,8 +56,7 @@ public class Process extends Thread implements Deliverer
     @Override
     public void deliver(Message message)
     {
-            logs.add("d " + this.processId + " " + message.getMessageId());
-            System.out.println(message.getMessage() + " from process " + message.getSenderId());
+            logs.add("d " + message.getSenderId() + " " + message.getMessageId());
     }
 
     public void writeOutput() throws IOException

@@ -1,6 +1,6 @@
 package cs451.broadcasts;
 
-import cs451.Message;
+import cs451.utils.Message;
 
 /**
  * Class name: Broadcast.java

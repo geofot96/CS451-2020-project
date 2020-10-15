@@ -1,7 +1,5 @@
 package cs451.utils;
 
-import cs451.Message;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,6 +16,7 @@ public class Consumer extends Thread
 {
     private Deliverer deliverer;
     private DatagramSocket socket;
+    private int port;
 
     public Consumer(Deliverer deliverer, int port)
     {
@@ -29,6 +28,7 @@ public class Consumer extends Thread
         {
             e.printStackTrace();
         }
+        this.port = port;
     }
 
     @Override

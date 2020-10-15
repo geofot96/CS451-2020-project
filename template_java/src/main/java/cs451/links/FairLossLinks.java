@@ -1,12 +1,10 @@
 package cs451.links;
 
 import cs451.Host;
-import cs451.Message;
+import cs451.utils.Message;
 import cs451.utils.Consumer;
 import cs451.utils.Deliverer;
 import cs451.utils.UDPWrapper;
-
-import java.net.DatagramSocket;
 
 /**
  * Class name: FairLossLinks.java

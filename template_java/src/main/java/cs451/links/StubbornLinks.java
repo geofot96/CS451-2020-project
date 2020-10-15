@@ -1,11 +1,10 @@
 package cs451.links;
 
 import cs451.Host;
-import cs451.Message;
+import cs451.utils.Message;
 import cs451.utils.Deliverer;
 import cs451.utils.Tuple;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;

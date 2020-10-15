@@ -1,11 +1,11 @@
 package cs451.links;
 
 import cs451.Host;
-import cs451.Message;
+import cs451.utils.Message;
 import cs451.utils.Deliverer;
+import cs451.utils.Tuple;
 
 import java.util.HashSet;
-import java.util.Timer;
 
 /**
  * Class name: PerfectLinks.java
@@ -16,7 +16,7 @@ public class PerfectLinks implements Deliverer, Link
 {
     Deliverer deliverer;
     StubbornLinks stubbornLinks;
-    private HashSet<Integer> delivered;
+    private HashSet<Tuple<Integer, Integer>> delivered;
 
     public PerfectLinks(Deliverer deliverer, int port)
     {
@@ -40,9 +40,10 @@ public class PerfectLinks implements Deliverer, Link
     @Override
     public void deliver(Message message)
     {
-        if(!this.delivered.contains(message.getMessageId()))
+        Tuple tuple = new Tuple(message.getSenderId(), message.getMessageId());
+        if(!this.delivered.contains(tuple))
         {
-            this.delivered.add(message.getMessageId());
+            this.delivered.add(tuple);
             this.deliverer.deliver(message);
         }
 

@@ -1,7 +1,7 @@
 package cs451;
 
-import cs451.broadcasts.BestEffortBroadcast;
 import cs451.processes.Process;
+import cs451.utils.Message;
 
 import java.io.IOException;
 
@@ -80,6 +80,7 @@ public class Main
         messages[1] = new Message("message 2", 2, parser.myId());
 
         process = new Process(parser.myId(), parser.hosts(), parser.output());
+        System.out.println("MY ID IS " + parser.myId());
 
         for(Message message: messages)
         {

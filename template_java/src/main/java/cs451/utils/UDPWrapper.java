@@ -1,7 +1,5 @@
 package cs451.utils;
 
-import cs451.Message;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -43,11 +41,16 @@ public class UDPWrapper
         {
             //DatagramSocket socket = new DatagramSocket(this.sourcePort, this.sourceIp);
             this.socket.send(piPacket);
+            close();
         } catch (IOException e)
         {
             System.out.println(e);
             System.out.println("Unable to send message.");
         }
+    }
+
+    private void close(){
+        this.socket.close();
     }
 
     private byte[] compressMessage()

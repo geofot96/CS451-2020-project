@@ -1,7 +1,5 @@
 package cs451.utils;
 
-import cs451.Message;
-
 /**
  * Class name: Deliverer.java
  * Created by: George Fotiadis
