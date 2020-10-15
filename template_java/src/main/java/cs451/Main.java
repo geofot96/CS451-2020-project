@@ -4,6 +4,11 @@ import cs451.processes.Process;
 import cs451.utils.Message;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main
 {
@@ -61,9 +66,14 @@ public class Main
         System.out.println("Signal: " + parser.signalIp() + ":" + parser.signalPort());
         System.out.println("Output: " + parser.output());
         // if config is defined; always check before parser.config()
-        if (parser.hasConfig())
-        {
+        List<String> configLines = null;
+        if (parser.hasConfig()) {
             System.out.println("Config: " + parser.config());
+            try (Stream<String> stream = Files.lines(Paths.get(parser.config()))) {
+                configLines = stream.collect(Collectors.toUnmodifiableList());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
 
@@ -74,13 +84,15 @@ public class Main
 
         System.out.println("Broadcasting messages...");
         ///////////////// My stuff //////////////////
+        int nbMessagesToBroadcast = configLines != null ? Integer.parseInt(configLines.get(0)) : 0;
 
-        Message[] messages = new Message[2];
-        messages[0] = new Message("message 1", 1, parser.myId());
-        messages[1] = new Message("message 2", 2, parser.myId());
+        Message[] messages = new Message[nbMessagesToBroadcast];
+        for (int i = 0; i < messages.length; i++)
+        {
+            messages[i] = new Message("a", i + 1, parser.myId());
+        }
 
         process = new Process(parser.myId(), parser.hosts(), parser.output());
-        System.out.println("MY ID IS " + parser.myId());
 
         for(Message message: messages)
         {

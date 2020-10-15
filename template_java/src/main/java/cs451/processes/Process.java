@@ -1,5 +1,7 @@
 package cs451.processes;
 import cs451.Host;
+import cs451.broadcasts.ReliableBroadcast;
+import cs451.broadcasts.UniformReliableBroadcast;
 import cs451.utils.Message;
 import cs451.broadcasts.BestEffortBroadcast;
 import cs451.utils.Deliverer;
@@ -18,27 +20,27 @@ public class Process extends Thread implements Deliverer
     private int processId;
     private List<Host> hosts;
     private Host myHost;
-    private BestEffortBroadcast bestEffortBroadcast;
+    private UniformReliableBroadcast broadcast;
     private String outputPath;
     private List<String> logs;
-    private HashSet<Integer> delivered;
+    //private HashSet<Integer> delivered;
 
     public Process(int processId, List<Host> hosts, String outputPath)
     {
         this.processId = processId;
         this.hosts = hosts;
         getMyHost();
-        this.bestEffortBroadcast = new BestEffortBroadcast(this, this.hosts, myHost.getPort());
-        System.out.println("My port is " + myHost.getPort());
+        this.broadcast = new UniformReliableBroadcast(this, this.hosts, myHost.getPort());
         this.outputPath = outputPath;
         this.logs = new ArrayList<>();
-        this.delivered = new HashSet<>();
+        //this.delivered = new HashSet<>();
     }
 
     public void broadcast(Message message)
     {
         this.logs.add("b " + message.getMessageId());
-        this.bestEffortBroadcast.broadcast(message);
+
+        this.broadcast.broadcast(message);
     }
 
     private void getMyHost()
