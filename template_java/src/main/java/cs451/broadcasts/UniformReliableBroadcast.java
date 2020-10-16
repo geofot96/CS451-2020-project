@@ -50,12 +50,11 @@ public class UniformReliableBroadcast implements Deliverer, Broadcast
         }
         this.acks.get(message.getMessageId()).add(message.getSenderId());
         relay(message);
-        System.out.println("Received message with id" + message.getMessageId() + " from process " + message.getSenderId());
+        //System.out.println("Received message with id" + message.getMessageId() + " from process " + message.getSenderId());
         if(this.acks.get(message.getMessageId()).size() > maxNumberOfAcks / 2.0)
         {
             if(!delivered.contains(message.getMessageId()))
             {
-                System.out.println("Delivering message with id" + message.getMessageId() + " from process " + message.getSenderId());
                 delivered.add(message.getMessageId());
                 this.deliverer.deliver(message);
             }

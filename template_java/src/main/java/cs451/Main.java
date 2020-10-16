@@ -1,6 +1,6 @@
 package cs451;
 
-import cs451.processes.Process;
+import cs451.utils.Process;
 import cs451.utils.Message;
 
 import java.io.IOException;
@@ -66,12 +66,15 @@ public class Main
         System.out.println("Signal: " + parser.signalIp() + ":" + parser.signalPort());
         System.out.println("Output: " + parser.output());
         // if config is defined; always check before parser.config()
-        List<String> configLines = null;
-        if (parser.hasConfig()) {
+        List<String> config = null;
+        if (parser.hasConfig())
+        {
             System.out.println("Config: " + parser.config());
-            try (Stream<String> stream = Files.lines(Paths.get(parser.config()))) {
-                configLines = stream.collect(Collectors.toUnmodifiableList());
-            } catch (IOException e) {
+            try (Stream<String> stream = Files.lines(Paths.get(parser.config())))
+            {
+                config = stream.collect(Collectors.toUnmodifiableList());
+            } catch (IOException e)
+            {
                 e.printStackTrace();
             }
         }
@@ -84,17 +87,22 @@ public class Main
 
         System.out.println("Broadcasting messages...");
         ///////////////// My stuff //////////////////
-        int nbMessagesToBroadcast = configLines != null ? Integer.parseInt(configLines.get(0)) : 0;
+        int messageNumber = 0;
 
-        Message[] messages = new Message[nbMessagesToBroadcast];
+        if(config != null)
+        {
+            messageNumber = Integer.parseInt(config.get(0));
+        }
+
+        Message[] messages = new Message[messageNumber];
         for (int i = 0; i < messages.length; i++)
         {
-            messages[i] = new Message("a", i + 1, parser.myId());
+            messages[i] = new Message("a", i + 1, parser.myId(), 0);
         }
 
         process = new Process(parser.myId(), parser.hosts(), parser.output());
 
-        for(Message message: messages)
+        for (Message message : messages)
         {
             process.broadcast(message);
         }

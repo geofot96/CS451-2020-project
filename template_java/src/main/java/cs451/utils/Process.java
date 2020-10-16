@@ -1,5 +1,6 @@
-package cs451.processes;
+package cs451.utils;
 import cs451.Host;
+import cs451.broadcasts.FIFOBroadcast;
 import cs451.broadcasts.ReliableBroadcast;
 import cs451.broadcasts.UniformReliableBroadcast;
 import cs451.utils.Message;
@@ -20,20 +21,21 @@ public class Process extends Thread implements Deliverer
     private int processId;
     private List<Host> hosts;
     private Host myHost;
-    private UniformReliableBroadcast broadcast;
+    private FIFOBroadcast broadcast;
     private String outputPath;
     private List<String> logs;
-    //private HashSet<Integer> delivered;
+
+    private int countDelivered;
 
     public Process(int processId, List<Host> hosts, String outputPath)
     {
         this.processId = processId;
         this.hosts = hosts;
         getMyHost();
-        this.broadcast = new UniformReliableBroadcast(this, this.hosts, myHost.getPort());
+        this.broadcast = new FIFOBroadcast(this, this.hosts, myHost.getPort());
         this.outputPath = outputPath;
         this.logs = new ArrayList<>();
-        //this.delivered = new HashSet<>();
+        this.countDelivered += 1;
     }
 
     public void broadcast(Message message)
@@ -59,6 +61,11 @@ public class Process extends Thread implements Deliverer
     public void deliver(Message message)
     {
             logs.add("d " + message.getSenderId() + " " + message.getMessageId());
+            countDelivered += 1;
+            if(countDelivered == 1000)
+            {
+                System.out.println("DONE DELIVERING");
+            }
     }
 
     public void writeOutput() throws IOException

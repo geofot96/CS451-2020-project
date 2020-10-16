@@ -19,12 +19,15 @@ public class Message implements Serializable
     private String message;
     private int messageId;
     private int senderId;
+    private int lsn;
 
-    public Message(String message, int messageId, int senderId)
+    public Message(String message, int messageId, int senderId, int lsn)
     {
         this.message = message;
         this.messageId = messageId;
         this.senderId = senderId;
+        this.lsn = lsn;
+
     }
 
     public String getMessage()
@@ -40,6 +43,16 @@ public class Message implements Serializable
     public int getSenderId()
     {
         return senderId;
+    }
+
+    public int getLsn()
+    {
+        return lsn;
+    }
+
+    public void setLsn(int lsn)
+    {
+        this.lsn = lsn;
     }
 }
 
