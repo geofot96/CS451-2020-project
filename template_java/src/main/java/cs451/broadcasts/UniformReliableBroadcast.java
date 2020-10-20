@@ -5,9 +5,8 @@ import cs451.utils.Deliverer;
 import cs451.utils.Message;
 import cs451.utils.Tuple;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class name: UniformReliableBroadcast.java
@@ -18,19 +17,19 @@ public class UniformReliableBroadcast implements Deliverer, Broadcast
 {
     private Deliverer deliverer;
     private BestEffortBroadcast bestEffortBroadcast;
-    private HashSet<Integer> delivered; //sender id, message id
-    private HashSet<Tuple<Integer, Integer>> pending; //sender id, message id
-    private HashMap<Integer, HashSet<Integer>> acks; //message id, processes that have acked
+    private Set<Integer> delivered; //sender id, message id
+    private Set<Tuple<Integer, Integer>> pending; //sender id, message id
+    private Map<Integer, Set<Integer>> acks; //message id, processes that have acked
     private double maxNumberOfAcks;
 
     public UniformReliableBroadcast(Deliverer deliverer, List<Host> hosts, int myPort)
     {
         this.deliverer = deliverer;
         this.bestEffortBroadcast = new BestEffortBroadcast(this, hosts, myPort);
-        this.delivered = new HashSet<>();
+        this.delivered = ConcurrentHashMap.newKeySet();
         this.maxNumberOfAcks = hosts.size();
-        this.pending = new HashSet<>();
-        this.acks = new HashMap<>();
+        this.pending = ConcurrentHashMap.newKeySet();
+        this.acks = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -46,11 +45,11 @@ public class UniformReliableBroadcast implements Deliverer, Broadcast
     {
         if(!this.acks.containsKey(message.getMessageId()))
         {
-            this.acks.put(message.getMessageId(), new HashSet<>());
+            this.acks.put(message.getMessageId(), ConcurrentHashMap.newKeySet());
         }
         this.acks.get(message.getMessageId()).add(message.getSenderId());
         relay(message);
-        //System.out.println("Received message with id" + message.getMessageId() + " from process " + message.getSenderId());
+       // System.out.println("Trying to deliver message with id" + message.getMessageId() + " from process " + message.getSenderId());
         if(this.acks.get(message.getMessageId()).size() > maxNumberOfAcks / 2.0)
         {
             if(!delivered.contains(message.getMessageId()))

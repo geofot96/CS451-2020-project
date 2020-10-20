@@ -6,6 +6,8 @@ import cs451.utils.Deliverer;
 import cs451.utils.Tuple;
 
 import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class name: PerfectLinks.java
@@ -16,13 +18,13 @@ public class PerfectLinks implements Deliverer, Link
 {
     private Deliverer deliverer;
     private StubbornLinks stubbornLinks;
-    private HashSet<Tuple<Integer, Integer>> delivered;
+    private Set<Tuple<Integer, Integer>> delivered;
 
     public PerfectLinks(Deliverer deliverer, int port)
     {
         this.deliverer = deliverer;
         this.stubbornLinks = new StubbornLinks(this, port);
-        this.delivered = new HashSet<>();
+        this.delivered = ConcurrentHashMap.newKeySet();
     }
 
     @Override

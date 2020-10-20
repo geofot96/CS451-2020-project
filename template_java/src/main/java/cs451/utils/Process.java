@@ -1,14 +1,12 @@
 package cs451.utils;
 import cs451.Host;
-import cs451.broadcasts.FIFOBroadcast;
-import cs451.broadcasts.ReliableBroadcast;
-import cs451.broadcasts.UniformReliableBroadcast;
+import cs451.broadcasts.*;
 import cs451.utils.Message;
-import cs451.broadcasts.BestEffortBroadcast;
 import cs451.utils.Deliverer;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 /**
@@ -21,9 +19,9 @@ public class Process extends Thread implements Deliverer
     private int processId;
     private List<Host> hosts;
     private Host myHost;
-    private FIFOBroadcast broadcast;
+    private Broadcast broadcast;
     private String outputPath;
-    private List<String> logs;
+    private ConcurrentLinkedQueue<String> logs;
 
     private int countDelivered;
 
@@ -32,15 +30,16 @@ public class Process extends Thread implements Deliverer
         this.processId = processId;
         this.hosts = hosts;
         getMyHost();
-        this.broadcast = new FIFOBroadcast(this, this.hosts, myHost.getPort());
+        this.broadcast = new UniformReliableBroadcast(this, this.hosts, myHost.getPort());
         this.outputPath = outputPath;
-        this.logs = new ArrayList<>();
+        this.logs = new ConcurrentLinkedQueue<>();
         this.countDelivered += 1;
     }
 
     public void broadcast(Message message)
     {
         this.logs.add("b " + message.getMessageId());
+        System.out.println("Broadcasting message " + message.getMessageId());
 
         this.broadcast.broadcast(message);
     }
@@ -60,12 +59,14 @@ public class Process extends Thread implements Deliverer
     @Override
     public void deliver(Message message)
     {
-            logs.add("d " + message.getSenderId() + " " + message.getMessageId());
-            countDelivered += 1;
-            if(countDelivered == 1000)
-            {
-                System.out.println("DONE DELIVERING");
-            }
+        System.out.println("Delivering message " + message.getMessageId());
+        logs.add("d " + message.getSenderId() + " " + message.getMessageId());
+        countDelivered += 1;
+        System.out.println("Delivered "+ (countDelivered - 1) + "th message");
+        if(countDelivered == 1000)
+        {
+            System.out.println("DONE DELIVERING");
+        }
     }
 
     public void writeOutput() throws IOException

@@ -44,18 +44,35 @@ public class FIFOBroadcast implements Deliverer, Broadcast
     public void deliver(Message message)
     {
         this.pending.add(message);
+
+//        if(message.getLsn() == this.next.get(message.getSenderId()))
+//        {
+//            next.set(message.getSenderId(), next.get(message.getSenderId()) + 1);
+//
+//            pending.remove(message);
+//
+//            this.deliverer.deliver(message);
+//        }
+        Set<Message> toBeRemoved = ConcurrentHashMap.newKeySet();
         for(Iterator<Message> i = this.pending.iterator(); i.hasNext();)
         {
             Message m = i.next();
-            //System.out.println("Stuck here with message " + m.getMessageId());
-            if(m.getLsn() == this.next.get(message.getSenderId()))
+            //System.out.println("Searching, lsn: " + m.getLsn() + " next: " + this.next.get(m.getSenderId()));
+            if(m.getLsn() == this.next.get(m.getSenderId()))
             {
-                System.out.println("Delivering message with id" + m.getMessageId() + " from process " + m.getSenderId());
-                next.set(message.getSenderId(), next.get(message.getSenderId()) + 1);
-                pending.remove(m);
+                //next.set(m.getSenderId(), next.get(m.getSenderId()) + 1);
+                next.incrementAndGet(m.getSenderId());
+                //pending.remove(m);
+                toBeRemoved.add(m);
+
                 this.deliverer.deliver(m);
             }
         }
+        for(Message m : toBeRemoved)
+        {
+            pending.remove(m);
+        }
+        //toBeRemoved.;
     }
 
     @Override

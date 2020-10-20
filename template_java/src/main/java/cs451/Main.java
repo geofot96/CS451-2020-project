@@ -88,25 +88,20 @@ public class Main
         System.out.println("Broadcasting messages...");
         ///////////////// My stuff //////////////////
         int messageNumber = 0;
-
         if(config != null)
         {
             messageNumber = Integer.parseInt(config.get(0));
         }
-
         Message[] messages = new Message[messageNumber];
         for (int i = 0; i < messages.length; i++)
         {
             messages[i] = new Message("a", i + 1, parser.myId(), 0);
         }
-
         process = new Process(parser.myId(), parser.hosts(), parser.output());
-
         for (Message message : messages)
         {
             process.broadcast(message);
         }
-
         ////////////////////////////////////////////
         System.out.println("Signaling end of broadcasting messages");
         coordinator.finishedBroadcasting();

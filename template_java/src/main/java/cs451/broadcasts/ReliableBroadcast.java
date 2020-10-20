@@ -8,6 +8,7 @@ import cs451.utils.Tuple;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class name: ReliableBroadcast.java
@@ -18,13 +19,13 @@ public class ReliableBroadcast implements Deliverer, Broadcast
 {
     private Deliverer deliverer;
     private BestEffortBroadcast bestEffortBroadcast;
-    private HashSet<Tuple<Integer, Integer>> delivered;
+    private Set<Tuple<Integer, Integer>> delivered;
 
     public ReliableBroadcast(Deliverer deliverer, List<Host> hosts, int myPort)
     {
         this.deliverer = deliverer;
         this.bestEffortBroadcast = new BestEffortBroadcast(this, hosts, myPort);
-        this.delivered = new HashSet<>();
+        this.delivered = ConcurrentHashMap.newKeySet();
     }
 
     @Override
