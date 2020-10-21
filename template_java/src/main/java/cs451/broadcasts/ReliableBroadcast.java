@@ -49,7 +49,7 @@ public class ReliableBroadcast implements Deliverer, Broadcast
     @Override
     public void deliver(Message message)
     {
-        Tuple tuple = new Tuple(message.getSenderId(), message.getMessageId());
+        Tuple tuple = new Tuple(message.getoriginalSenderId(), message.getMessageId());
         if(!this.delivered.contains(tuple))
         {
             this.delivered.add(tuple);

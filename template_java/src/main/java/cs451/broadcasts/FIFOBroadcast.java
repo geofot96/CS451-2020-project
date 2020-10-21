@@ -3,6 +3,7 @@ package cs451.broadcasts;
 import cs451.Host;
 import cs451.utils.Deliverer;
 import cs451.utils.Message;
+import cs451.utils.Tuple;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,11 +21,12 @@ public class FIFOBroadcast implements Deliverer, Broadcast
     private int lsn;
     private Set<Message> pending; // messages urb delivered but waiting to be fifo delivered
     private AtomicIntegerArray next; //an entry for every process p with the sequence number of the next message to be frb-delivered from sender p
+    private int myHost;
 
-    public FIFOBroadcast(Deliverer deliverer, List<Host> hosts, int myPort)
+    public FIFOBroadcast(Deliverer deliverer, List<Host> hosts, int myPort, int myHost)
     {
         this.deliverer = deliverer;
-        this.uniformReliableBroadcast = new UniformReliableBroadcast(this, hosts, myPort);
+        this.uniformReliableBroadcast = new UniformReliableBroadcast(this, hosts, myPort, myHost);
         this.lsn = 0;
         this.pending = ConcurrentHashMap.newKeySet();
         int[] tempNext = new int[hosts.size() + 1];
@@ -45,34 +47,24 @@ public class FIFOBroadcast implements Deliverer, Broadcast
     {
         this.pending.add(message);
 
-//        if(message.getLsn() == this.next.get(message.getSenderId()))
-//        {
-//            next.set(message.getSenderId(), next.get(message.getSenderId()) + 1);
-//
-//            pending.remove(message);
-//
-//            this.deliverer.deliver(message);
-//        }
-        Set<Message> toBeRemoved = ConcurrentHashMap.newKeySet();
+        //Set<Message> toBeRemoved = ConcurrentHashMap.newKeySet();
         for(Iterator<Message> i = this.pending.iterator(); i.hasNext();)
         {
             Message m = i.next();
             //System.out.println("Searching, lsn: " + m.getLsn() + " next: " + this.next.get(m.getSenderId()));
-            if(m.getLsn() == this.next.get(m.getSenderId()))
+            //System.out.println("Message in pending: " + m.getMessageId() + " from sender " + m.getSenderId() + " with lsn " + m.getLsn());
+            if(m.getLsn() == this.next.get(m.getoriginalSenderId()))
             {
-                //next.set(m.getSenderId(), next.get(m.getSenderId()) + 1);
-                next.incrementAndGet(m.getSenderId());
-                //pending.remove(m);
-                toBeRemoved.add(m);
-
+                next.incrementAndGet(m.getoriginalSenderId());
+                //toBeRemoved.add(m);
+                i.remove();
                 this.deliverer.deliver(m);
             }
         }
-        for(Message m : toBeRemoved)
-        {
-            pending.remove(m);
-        }
-        //toBeRemoved.;
+//        for(Message m : toBeRemoved)
+//        {
+//            pending.remove(m);
+//        }
     }
 
     @Override

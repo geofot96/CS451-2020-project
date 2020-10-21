@@ -33,4 +33,13 @@ public class Tuple<T, S>
     {
         return Objects.hash(first, second);
     }
+
+    @Override
+    public String toString()
+    {
+        return "Tuple{" +
+                "first=" + first +
+                ", second=" + second +
+                '}';
+    }
 }

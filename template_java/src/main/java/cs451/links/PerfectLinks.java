@@ -3,6 +3,7 @@ package cs451.links;
 import cs451.Host;
 import cs451.utils.Message;
 import cs451.utils.Deliverer;
+import cs451.utils.Triplet;
 import cs451.utils.Tuple;
 
 import java.util.HashSet;
@@ -18,7 +19,7 @@ public class PerfectLinks implements Deliverer, Link
 {
     private Deliverer deliverer;
     private StubbornLinks stubbornLinks;
-    private Set<Tuple<Integer, Integer>> delivered;
+    private Set<Triplet<Integer, Integer, Integer>> delivered;
 
     public PerfectLinks(Deliverer deliverer, int port)
     {
@@ -42,10 +43,10 @@ public class PerfectLinks implements Deliverer, Link
     @Override
     public void deliver(Message message)
     {
-        Tuple tuple = new Tuple(message.getSenderId(), message.getMessageId());
-        if(!this.delivered.contains(tuple))
+        Triplet triplet = new Triplet(message.getoriginalSenderId(), message.getRelaySenderId(), message.getMessageId());
+        if(!this.delivered.contains(triplet))
         {
-            this.delivered.add(tuple);
+            this.delivered.add(triplet);
             this.deliverer.deliver(message);
         }
 
