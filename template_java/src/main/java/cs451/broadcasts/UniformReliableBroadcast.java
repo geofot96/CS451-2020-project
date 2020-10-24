@@ -66,14 +66,6 @@ public class UniformReliableBroadcast implements Deliverer, Broadcast
             }
         }
 
-//        if(this.acks.get(tuple).size() > maxNumberOfAcks / 2.0)
-//        {
-//            if(!delivered.contains(tuple))
-//            {
-//                delivered.add(tuple);
-//                this.deliverer.deliver(message);
-//            }
-//        }
     }
 
     private boolean canDeliver(Tuple<Integer, Integer> tuple)

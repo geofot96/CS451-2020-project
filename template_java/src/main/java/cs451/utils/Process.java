@@ -30,7 +30,7 @@ public class Process extends Thread implements Deliverer
         this.processId = processId;
         this.hosts = hosts;
         getMyHost();
-        this.broadcast = new UniformReliableBroadcast(this, this.hosts, myHost.getPort(), myHost.getId());
+        this.broadcast = new FIFOBroadcast(this, this.hosts, myHost.getPort(), myHost.getId());
         this.outputPath = outputPath;
         this.logs = new ConcurrentLinkedQueue<>();
         this.countDelivered += 1;
@@ -60,10 +60,10 @@ public class Process extends Thread implements Deliverer
     public void deliver(Message message)
     {
         System.out.println("Delivering message " + message.getMessageId());
-        logs.add("d " + message.getRelaySenderId() + " " + message.getMessageId());
+        logs.add("d " + message.getoriginalSenderId() + " " + message.getMessageId());
         countDelivered += 1;
         System.out.println("Delivered "+ (countDelivered - 1) + "th message");
-        if(countDelivered == 1000)
+        if(countDelivered - 1 == 4000)
         {
             System.out.println("DONE DELIVERING");
         }

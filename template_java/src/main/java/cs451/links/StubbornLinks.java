@@ -21,7 +21,7 @@ public class StubbornLinks implements Deliverer, Link
     private Timer timer;
     private FairLossLinks fairLossLinks;
     private Set<Tuple<Message, Host>> sent;
-    private final static int timeout = 500;
+    private final static int timeout = 100;
 
     public StubbornLinks(Deliverer deliverer, int port)
     {
@@ -57,6 +57,7 @@ public class StubbornLinks implements Deliverer, Link
     @Override
     public void deliver(Message message)
     {
+        //System.out.println("SL received from consumer pushing above");
         this.deliverer.deliver(message);
     }
 

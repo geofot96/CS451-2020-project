@@ -19,13 +19,13 @@ public class PerfectLinks implements Deliverer, Link
 {
     private Deliverer deliverer;
     private StubbornLinks stubbornLinks;
-    private Set<Triplet<Integer, Integer, Integer>> delivered;
+    private Set<Message> delivered;
 
     public PerfectLinks(Deliverer deliverer, int port)
     {
         this.deliverer = deliverer;
         this.stubbornLinks = new StubbornLinks(this, port);
-        this.delivered = ConcurrentHashMap.newKeySet();
+        this.delivered = new HashSet<>();
     }
 
     @Override
@@ -43,10 +43,9 @@ public class PerfectLinks implements Deliverer, Link
     @Override
     public void deliver(Message message)
     {
-        Triplet triplet = new Triplet(message.getoriginalSenderId(), message.getRelaySenderId(), message.getMessageId());
-        if(!this.delivered.contains(triplet))
+        if(!this.delivered.contains(message))
         {
-            this.delivered.add(triplet);
+            this.delivered.add(message);
             this.deliverer.deliver(message);
         }
 

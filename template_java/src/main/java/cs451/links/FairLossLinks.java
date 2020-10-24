@@ -35,6 +35,7 @@ public class FairLossLinks implements Deliverer, Link
     @Override
     public void deliver(Message message)
     {
+       // System.out.println("FL received from consumer pushing above");
         this.deliverer.deliver(message);
     }
 

@@ -1,6 +1,8 @@
 package cs451.utils;
 
 import java.io.Serializable;
+import java.util.Objects;
+
 /**
  * Class name: Message.java
  * Created by: George Fotiadis
@@ -48,11 +50,6 @@ public class Message implements Serializable
         this.lsn = lsn;
     }
 
-    public void setoriginalSenderId(int originalSenderId)
-    {
-        this.originalSenderId = originalSenderId;
-    }
-
     public int getRelaySenderId()
     {
         return relaySenderId;
@@ -61,6 +58,25 @@ public class Message implements Serializable
     public void setRelaySenderId(int relaySenderId)
     {
         this.relaySenderId = relaySenderId;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Message message1 = (Message) o;
+        return messageId == message1.messageId &&
+                originalSenderId == message1.originalSenderId &&
+                lsn == message1.lsn &&
+                relaySenderId == message1.relaySenderId &&
+                Objects.equals(message, message1.message);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(message, messageId, originalSenderId, lsn, relaySenderId);
     }
 
     @Override
