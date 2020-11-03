@@ -21,7 +21,7 @@ public class FIFOBroadcast implements Deliverer, Broadcast
     private UniformReliableBroadcast uniformReliableBroadcast;
     private int lsn;
     private Set<Message> pending; // messages urb delivered but waiting to be fifo delivered
-    private AtomicIntegerArray next; //an entry for every process p with the sequence number of the next message to be frb-delivered from sender p
+    private ConcurrentHashMap<Integer, Integer> next = new ConcurrentHashMap<>(); //an entry for every process p with the sequence number of the next message to be frb-delivered from sender p
     private int myHost;
 
     public FIFOBroadcast(Deliverer deliverer, List<Host> hosts, int myPort, int myHost)
@@ -30,9 +30,11 @@ public class FIFOBroadcast implements Deliverer, Broadcast
         this.uniformReliableBroadcast = new UniformReliableBroadcast(this, hosts, myPort, myHost);
         this.lsn = 0;
         this.pending = ConcurrentHashMap.newKeySet();
-        int[] tempNext = new int[hosts.size() + 1];
-        Arrays.fill(tempNext, 1);
-        this.next = new AtomicIntegerArray(tempNext);
+
+        for(Host h : hosts)
+        {
+            next.put(h.getId(), 1);
+        }
     }
 
     @Override
@@ -55,7 +57,7 @@ public class FIFOBroadcast implements Deliverer, Broadcast
             Message m = i.next();
             if(m.getLsn() == this.next.get(m.getoriginalSenderId()))
             {
-                next.incrementAndGet(m.getoriginalSenderId());
+                next.put(m.getoriginalSenderId(), next.get(m.getoriginalSenderId()) + 1);
                 this.deliverer.deliver(m);
                 i.remove();
                 i = pending.iterator();
