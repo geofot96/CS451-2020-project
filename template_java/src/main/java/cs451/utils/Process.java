@@ -6,6 +6,7 @@ import cs451.utils.Deliverer;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 
@@ -22,7 +23,7 @@ public class Process extends Thread implements Deliverer
     private Broadcast broadcast;
     private String outputPath;
     private ConcurrentLinkedQueue<String> logs;
-
+    private Set<Integer> dependsOn;
     private int countDelivered;
 
     public Process(int processId, List<Host> hosts, String outputPath)
@@ -34,6 +35,18 @@ public class Process extends Thread implements Deliverer
         this.outputPath = outputPath;
         this.logs = new ConcurrentLinkedQueue<>();
         this.countDelivered += 1;
+    }
+
+    public Process(int processId, List<Host> hosts, String outputPath, Set<Integer> dependsOn)
+    {
+        this.processId = processId;
+        this.hosts = hosts;
+        getMyHost();
+        this.broadcast = new CausalBroadcast(this, this.hosts, myHost.getPort(), myHost.getId());
+        this.outputPath = outputPath;
+        this.logs = new ConcurrentLinkedQueue<>();
+        this.countDelivered += 1;
+        this.dependsOn = dependsOn; // TODO maybe convert to concurrent
     }
 
     public void broadcast(Message message)

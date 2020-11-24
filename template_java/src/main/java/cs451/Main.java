@@ -6,7 +6,9 @@ import cs451.utils.Message;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,6 +43,26 @@ public class Main
                 handleSignal();
             }
         });
+    }
+
+    private static Set<Integer> parseConfig(List<String> config, Parser parser)
+    {
+        int nbMessagesToBroadcast = 0;
+        Set<Integer> dependsOn = null;
+        if (config != null) {
+            nbMessagesToBroadcast = Integer.parseInt(config.get(0));
+            int size = config.size();
+            if (size > 1) {
+                for (String line : config.subList(1, size)) {
+                    var split = line.split(" ");
+                    if (Integer.parseInt(split[0]) == parser.myId()) {
+                        dependsOn = Arrays.stream(split).skip(1).map(Integer::valueOf).collect(Collectors.toUnmodifiableSet());
+                        break;
+                    }
+                }
+            }
+        }
+        return dependsOn;
     }
 
     public static void main(String[] args) throws InterruptedException
@@ -97,7 +119,10 @@ public class Main
         {
             messages[i] = new Message("a", i + 1, parser.myId(), 0);
         }
-        process = new Process(parser.myId(), parser.hosts(), parser.output());
+
+        Set<Integer> dependsOn = parseConfig(config, parser);
+
+        process = new Process(parser.myId(), parser.hosts(), parser.output(), dependsOn);
         for (Message message : messages)
         {
             process.broadcast(message);

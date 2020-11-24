@@ -35,7 +35,7 @@ class TC:
         self.sudoPassword = sudoPassword
 
         cmd1 = 'tc qdisc add dev {} root netem 2>/dev/null'.format(self.interface)
-        cmd2 = 'tc qdisc change dev {} root netem delay {} {} loss {} {} reorder {} {}'.format(self.interface, *self.losses['delay'], *self.losses['loss'], *self.losses['reordering'])
+        cmd2 = 'tc qdisc change dev {} root netem delay {} {} distribution normal loss {} {} reorder {} {}'.format(self.interface, *self.losses['delay'], *self.losses['loss'], *self.losses['reordering'])
 
         if self.needSudo:
             os.system("echo {} | sudo -S {}".format(self.sudoPassword, cmd1))
@@ -49,6 +49,7 @@ class TC:
     def __str__(self):
         ret = """\
         Interface: {}
+          Distribution: Normal
           Delay: {} {}
           Loss: {} {}
           Reordering: {} {}""".format(
@@ -201,8 +202,9 @@ class FifoBroadcastValidation(Validation):
         return True
 
 class LCausalBroadcastValidation(Validation):
-    def __init__(self, processes, outputDir, causalRelationships):
-        super().__init__(processes, outputDir)
+    def __init__(self, processes, messages, outputDir, extraParameter):
+        super().__init__(processes, messages, outputDir)
+        # Use the `extraParameter` to pass any information you think is relevant
 
     def generateConfig(self):
         raise NotImplementedError()
@@ -359,6 +361,8 @@ def main(processes, messages, runscript, broadcastType, logsDir, testConfig):
     if broadcastType == "fifo":
         validation = FifoBroadcastValidation(processes, messages, logsDir)
     else:
+        # Use the last argument (now it's `None` since it's not being use) to
+        # pass any information that you think is relevant
         validation = LCausalBroadcastValidation(processes, messages, logsDir, None)
 
     hostsFile, configFile = validation.generateConfig()

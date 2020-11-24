@@ -1,7 +1,9 @@
 package cs451.utils;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class name: Message.java
@@ -15,6 +17,7 @@ public class Message implements Serializable
     private int originalSenderId;
     private int lsn;
     private int relaySenderId;
+    private Map<Integer, Integer> vClock; // for causal
 
     public Message(String message, int messageId, int originalSenderId, int lsn)
     {
@@ -58,6 +61,16 @@ public class Message implements Serializable
     public void setRelaySenderId(int relaySenderId)
     {
         this.relaySenderId = relaySenderId;
+    }
+
+    public Map<Integer, Integer> getvClock()
+    {
+        return vClock;
+    }
+
+    public void setvClock(Map<Integer, Integer> vClock)
+    {
+        this.vClock = new ConcurrentHashMap<>(vClock);
     }
 
     @Override
